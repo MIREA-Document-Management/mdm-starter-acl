@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <preConditions>
+        <dbms type="postgresql"/>
+    </preConditions>
+
+    <changeSet id="init-extensions" author="Melekhin Mikhail">
+        <comment>Подключение необходимых расширений</comment>
+        <sql><![CDATA[
+            CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="create-mdm-access-rules-table" author="Melekhin Mikhail">
+        <comment>Создание таблицы mdm_access_rules</comment>
+        <sql><![CDATA[
+            CREATE TABLE IF NOT EXISTS mdm_access_rules
+            (
+                id                      UUID NOT NULL DEFAULT public.uuid_generate_v4() PRIMARY KEY,
+                object_id               UUID NOT NULL,
+                action                  TEXT NOT NULL,
+                rule_type               TEXT NOT NULL,
+                roles                   TEXT[] DEFAULT '{}',
+                groups                  TEXT[] DEFAULT '{}',
+                users                   TEXT[] DEFAULT '{}',
+                created_by              TEXT NOT NULL,
+                creation_date           timestamp NOT NULL,
+                modified_by             TEXT NOT NULL,
+                modification_date       timestamp NOT NULL
+            );
+        ]]></sql>
+        <rollback>DROP TABLE mdm_access_rules;</rollback>
+    </changeSet>
+
+</databaseChangeLog>
